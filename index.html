@@ -31,6 +31,39 @@
 
   <title>readindanalysis</title>
   <link rel="manifest" href="manifest.json">
+  <script>
+    // The value below is injected by flutter build, do not touch.
+    const serviceWorkerVersion = null;
+
+    // Function to check internet connection
+    function checkInternetConnection() {
+      if (!navigator.onLine) {
+        // Display no internet message if there's no internet connection
+        document.getElementById('noInternet').style.display = 'block';
+        // Redirect to 404.html if there's no internet connection
+        window.location.href = 'network.html';
+      }
+    }
+
+    // Event listener for when the user goes offline
+    window.addEventListener('offline', function(event) {
+      // Display no internet message when user goes offline
+      document.getElementById('noInternet').style.display = 'block';
+      // Redirect to 404.html if user goes offline
+      window.location.href = 'network.html';
+    });
+
+    // Event listener for when the user comes online
+    window.addEventListener('online', function(event) {
+      // Redirect to homepage if user comes online
+      window.location.href = '/';
+    });
+
+    // Check network connection when the page is reloaded
+    window.addEventListener('beforeunload', function(event) {
+      checkInternetConnection();
+    });
+  </script>
 
   <script>
     // The value below is injected by flutter build, do not touch.
@@ -62,11 +95,18 @@
     }
   </style>
 </head>
-<body>
+<body onload="checkInternetConnection()">
+  <!-- Loading circular bar -->
   <div class="loader"></div>
+
+  <!-- No internet message -->
+  <div id="noInternet">No internet connection</div>
+
   <script>
     window.addEventListener('load', function(ev) {
+      // Display loader
       document.querySelector('.loader').style.display = 'block';
+
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
@@ -75,6 +115,8 @@
         onEntrypointLoaded: function(engineInitializer) {
           engineInitializer.initializeEngine().then(function(appRunner) {
             appRunner.runApp();
+
+            // Hide loader when app is loaded
             document.querySelector('.loader').style.display = 'none';
           });
         }
